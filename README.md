@@ -15,3 +15,5 @@ ipconfig 결과 가공
 쿼리의 결과를 반환하고, 로깅
 ## exportTnsnames
 클라이언트에서 접근하기위한 tnsnames.ora 파일에 추가해야할 내용 반환
+## getServicename
+Service ID 조회
