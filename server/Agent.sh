@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # 0. export project root path
 # 1. set environment
@@ -29,13 +29,12 @@ export_project_root_path () {
 # 1. set environment
 set_environment () {
   cd $PROJECT_ROOT || exit
-  echo $(pwd)
-  # echo $(cat .color.env)
+  . ./.color.env
 }
 # 2. check shell file
 check_shell_file() {
   if [ $# -lt 1 ]; then
-    echo "No shell file was specified to run. (example: sh Agent.sh 'sample')"
+    echo_red "No shell file was specified to run. (example: sh Agent.sh 'sample')"
     exit
   fi
 }

@@ -1,4 +1,20 @@
-#!/bin/bash
+#!/bin/sh
 
 OUTPUT="$(date +%F)"
-echo "$OUTPUT"
+
+echo_red "$OUTPUT"
+echo_black "$OUTPUT"
+echo_blue "$OUTPUT"
+echo_red "$OUTPUT"
+echo_purple "$OUTPUT"
+echo_green "$OUTPUT"
+echo_cyan "$OUTPUT"
+echo_brown "$OUTPUT"
+echo_white "$OUTPUT"
+echo_basic "$OUTPUT"
+echo_bold "$OUTPUT"
+echo_under "$OUTPUT"
+echo_glow "$OUTPUT"
+echo_inv "$OUTPUT"
+echo_au "$OUTPUT"
+echo_uu "$OUTPUT"
