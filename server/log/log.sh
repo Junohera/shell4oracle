@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # sample
-# sh log 'select 1 from dual;' 'test'
+# sh log.sh 'select 1 from dual;' 'test'
 
 logging="$0.log"
 queryname="$2"
