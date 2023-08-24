@@ -14,15 +14,23 @@ export_project_root_path () {
   file=$(echo $full_path | awk -F"/" '{print $NF}')
   name=$(echo $file | awk -F"." '{print $1}')
 
-  PROJECT_ROOT=$(echo $full_path | awk -F"$file" '{print $1}')
+  if [ $full_path = $file ]; 
+  then
+    echo "full_path same file"
+    PROJECT_ROOT=$(pwd)
+  else
+    echo "else"
+    PROJECT_ROOT=$(echo $full_path | awk -F"$file" '{print $1}')    
+  fi 
 
-  # echo "full_path : ${full_path}"; echo "file : ${file}"; echo "name : ${name}"; echo "PROJECT_ROOT : ${PROJECT_ROOT}";
+  echo "full_path : ${full_path}"; echo "file : ${file}"; echo "name : ${name}"; echo "PROJECT_ROOT : ${PROJECT_ROOT}";
   export PROJECT_ROOT  
 }
 # 1. set environment
 set_environment () {
   cd $PROJECT_ROOT || exit
-  echo $(cat .color.env)
+  echo $(pwd)
+  # echo $(cat .color.env)
 }
 # 2. check shell file
 check_shell_file() {
