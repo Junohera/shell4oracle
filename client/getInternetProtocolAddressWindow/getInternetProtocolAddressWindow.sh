@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 clear
 
 DIST_PATH="$0.result"

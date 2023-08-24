@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # 목적
 # CLIENT의 TNSNMES.ORA파일을 확인하기 위한 SHELL

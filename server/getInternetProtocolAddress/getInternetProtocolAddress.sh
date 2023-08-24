@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 ifconfig |
   head -2 |
   tail -1 |
