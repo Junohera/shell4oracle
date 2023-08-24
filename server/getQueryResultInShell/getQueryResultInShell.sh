@@ -14,5 +14,4 @@ $query
 _eof_
 )
 
-filename=".temp.$(echo $0 | awk -F. '{print $1}')"
-echo "$result" > $filename
+echo "$result"
