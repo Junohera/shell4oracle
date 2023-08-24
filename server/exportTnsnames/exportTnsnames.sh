@@ -2,14 +2,17 @@
 
 clear
 
-DIST_PATH="$0.result"
+FULL_PATH=$0
+FILE=$(echo $FULL_PATH | awk -F"/" '{print $NF}')
+NAME=$(echo $FILE | awk -F"." '{print $1}')
+CURRENT_PATH=$(echo $FULL_PATH | awk -F"$FILE" '{print $1}' )
+PARENT_PATH=$(echo $FULL_PATH | awk -F"$NAME" '{print $1}')
 
-ALIAS='TEST'
-IP='172.16.16.1'
-PORT='1521'
-SERVER_MODE='DEDICATED'
-SERVICE_NAME='TEST'
-
+IP=$(sh "${PARENT_PATH}getInternetProtocolAddress/getInternetProtocolAddress.sh")
+PORT=1521
+SERVER_MODE=DEDICATED
+SERVICE_NAME=$(sh "${PARENT_PATH}getServiceName/getServiceName.sh")
+ALIAS=$SERVICE_NAME
 
 TEMPLATE='
 ${ALIAS} = 
@@ -21,33 +24,13 @@ ${ALIAS} =
     )
   )
 '
-echo "$TEMPLATE" |
-sed 's/${ALIAS}/'"${ALIAS}"'/g' |
-sed 's/${IP}/'"${IP}"'/g' |
-sed 's/${PORT}/'"${PORT}"'/g' |
-sed 's/${SERVER_MODE}/'"${SERVER_MODE}"'/g' |
-sed 's/${SERVICE_NAME}/'"${SERVICE_NAME}"'/g' |
-sed '/^$/d' > "$DIST_PATH"
-
-cat -n "$DIST_PATH"
-
-# 참고 쿼리: select name from v$database;
-
-username=scott
-password=oracle
-pagesize=1
-linesize=10
-query='
-select name
-  from v$dtabase;
-'
-result=$(sqlplus -S ${username}/${password} <<_eof_
-set head off
-set feedback off
-set pagesize ${pagesize}
-set linesize ${linesize}
-${query}
-exit;
-_eof_
+APPLIED=$(
+  echo "$TEMPLATE" |
+    sed 's/${ALIAS}/'"${ALIAS}"'/g' |
+    sed 's/${IP}/'"${IP}"'/g' |
+    sed 's/${PORT}/'"${PORT}"'/g' |
+    sed 's/${SERVER_MODE}/'"${SERVER_MODE}"'/g' |
+    sed 's/${SERVICE_NAME}/'"${SERVICE_NAME}"'/g' |
+    sed '/^$/d'
 )
-echo $result
+echo "$APPLIED"
