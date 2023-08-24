@@ -82,7 +82,7 @@ check_shell_file() {
 }
 # 4. execute shell file
 execute_shell_file() {
-  echo "execute_shell_file"
+  clear
   sh $shell_file
 }
 ###########################################
