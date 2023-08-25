@@ -110,4 +110,5 @@ sh Manager.sh
 ---
 # TODO
 1. log위치 입력받아 저장
-2. 
+2. offlinebackup restore를 동적으로 경로를 받아와 구현
+3. onlinebackup restore를 동적으로 경로를 받아와 구현
