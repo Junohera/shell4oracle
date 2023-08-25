@@ -53,11 +53,11 @@ check_shell_file() {
     echo_red "Warning: No shell file was specified to run. (example: sh Agent.sh 'sample')"
     echo_blue "but, i will suggest."
     echo -n "${blue}wait ${color_init}"
-    # for exp in . . .
-    # do
-    #   echo -n "${blue}${exp}${color_init}"
-    #   sleep 1
-    # done
+    for exp in . . . . . . .
+    do
+      echo -n "${blue}${exp}${color_init}"
+      sleep 0.2
+    done
     
     clear;
     cat -n .services.whitelist
