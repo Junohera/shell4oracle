@@ -68,3 +68,4 @@ sh Manager.sh
 # TODO
 1. db 접속정보 profile export플로우 추가
 1. profile 선택하여 실행하도록 수정
+1. how to develop 기입
