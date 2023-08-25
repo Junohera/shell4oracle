@@ -1,7 +1,0 @@
-select path from (select null as path from dual
-) where path is not null
- minus
-select path from (select null as path from dual
- union all select '' from dual
-) where path is not null
-;
