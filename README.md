@@ -11,6 +11,12 @@ __.etc__: 클라이언트 관점에서의 기타 쉘파일
 
 # Project Explain
 ## Management
+### why 
+** ❓ 실제 운영시 필요한 기능을 자동화하기 위함 **
+** ❓ 단일책임원칙을 최대한 유지해가며 복잡하고 어려운 기능을 단순하고 쉬운 기능으로 분리하여 어려운 문제도 단순한 문제로 만들어가면서 해결하기  위함
+
+쿼리와 shell을  직접 구현하고,게 하기위하여 하나의 파일안에서 작성 가능한 수준의 여러 파일들을 
+
 ### how to use
 ```shell
 # step 1. execute Manager.sh
@@ -37,13 +43,36 @@ DB1 =
   )
 [oracle@oel7 admin]$ 
 ```
+### TIP 🎁
+```shell
+# 현재 실행중인 쉘파일 절대경로
+CURRENT=$(dirname $(realpath $0))
+echo "${CURRENT}"
+
+# db connection 정보 가져오기
+. loadProfile/loadProfile.sh scott
+. loadProfile/loadProfile.sh system
+. loadProfile/loadProfile.sh ${WHO}
+
+# 쿼리 실행 및 로깅
+tail -f executeQueryWithLog.sh.log
+
+result=$(sh executeQueryWithLog.sh 'select 1 from dual;')
+if [ $? -eq 0 ]; then echo "${result}"; else echo_red "${result}"; fi
+result=$(sh executeQueryWithLog.sh 'select sysdate from dual;' '현재시간 조회')
+if [ $? -eq 0 ]; then echo "${result}"; else echo_red "${result}"; fi
+result=$(sh executeQueryWithLog.sh 'select * from dba_tablespaces;' getTablespaces)
+if [ $? -eq 0 ]; then echo "${result}"; else echo_red "${result}"; fi
+```
 ### services
-1. getDiffDataFiles: 모든 datafile과 모든 tempfile들을 논리집합, 물리집합으로 구분하여 누락된 데이터파일과 제거해야할 데이터파일을 색출
-1. ~~getQueryResultInShell~~: 쿼리를 전달받아 결과 제공하는 shell
-1. log: 쿼리의 결과를 반환하고, 로깅
-1. exportTnsnames: 클라이언트에서 접근하기위한 tnsnames.ora 파일에 추가해야할 내용 반환
-1. getServicename: Service ID 조회
-1. getGapAnalysis: A B 간의 갭 조회
+1. TODO:_executeQueryWithLog: 입력받은 쿼리를 수행하고, 결과반환 및 로깅
+1. +exportTnsnames: 클라이언트에서 접근하기위한 tnsnames.ora 파일에 추가해야할 내용 반환
+1. TODO:+getDiffDataFiles: 모든 datafile과 모든 tempfile들을 논리집합, 물리집합으로 구분하여 누락된 데이터파일과 제거해야할 데이터파일을 색출
+1. TODO:+getGapAnalysis: A B 간의 갭 조회
+1. +getInternetProtocolAddress: ip 반환
+1. +getQueryResultInShell: 샘플 쿼리 결과 조회 shell
+1. +getServicename: Service ID 조회
+1. _loadProfile: db profile 설정
 
 ### how to develop
 ```shell
@@ -76,5 +105,5 @@ sh Manager.sh
 **~~getInternetProtocolAddress(window)~~**: ipconfig 결과 가공
 ---
 # TODO
-1. db 접속정보 profile export플로우 추가
-1. profile 선택하여 실행하도록 수정
+1. log위치 입력받아 저장
+2. 
