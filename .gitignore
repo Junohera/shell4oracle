@@ -3,3 +3,7 @@
 *.log
 *.white*
 *.black*
+*.sh.*
+*.directories
+*.logical
+*.physical
