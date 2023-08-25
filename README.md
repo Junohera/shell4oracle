@@ -11,6 +11,7 @@ __.etc__: 클라이언트 관점에서의 기타 쉘파일
 
 # Project Explain
 ## Management
+### how to use
 ```shell
 # step 1. execute Manager.sh
 sh Manager.sh
@@ -51,6 +52,7 @@ cd ${PROJECT_ROOT}/management
 mkdir "${service_name}"
 vi ${service_name}.sh
 # step 2. check services
+TODO:
 ```
 
 ## .etc
