@@ -19,3 +19,11 @@ ipconfig 결과 가공
 Service ID 조회
 ## getGapAnalysis
 A B 간의 갭 조회
+
+---
+# TODO
+1. server디렉토리 제거
+1. agent.sh는 runner나 다른 이름으로 변경
+1. db 접속정보 profile export플로우 추가
+1. runner 이용시 profile 선택하여 실행하도록 수정
+1. profiles 폴더만들고 유저별 접속정보추가
