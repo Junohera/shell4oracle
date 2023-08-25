@@ -17,3 +17,5 @@ ipconfig 결과 가공
 클라이언트에서 접근하기위한 tnsnames.ora 파일에 추가해야할 내용 반환
 ## getServicename
 Service ID 조회
+## getGapAnalysis
+A B 간의 갭 조회
