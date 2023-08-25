@@ -48,11 +48,21 @@ DB1 =
 ### how to develop
 ```shell
 # step 1. create directory, file
-cd ${PROJECT_ROOT}/management
-mkdir "${service_name}"
-vi ${service_name}.sh
-# step 2. check services
-TODO:
+cd "${PROJECT_ROOT}/management"
+mkdir new_service
+vi new_service.sh
+
+#!/bin/sh
+echo "hello world"
+:wq
+
+# step 2. register services
+echo "new_service" | tee -a .services
+
+# step 3. exeucute service
+sh Manager.sh 'new_service'
+or
+sh Manager.sh
 ```
 
 ## .etc
@@ -68,4 +78,3 @@ sh Manager.sh
 # TODO
 1. db 접속정보 profile export플로우 추가
 1. profile 선택하여 실행하도록 수정
-1. how to develop 기입

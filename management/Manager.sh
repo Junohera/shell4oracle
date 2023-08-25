@@ -53,10 +53,10 @@ check_shell_file() {
     echo_red "Warning: No shell file was specified to run. (example: sh Agent.sh 'sample')"
     echo_blue "but, i will suggest."
     echo -n "${blue}wait ${color_init}"
-    for exp in . . . . . . .
+    for exp in . . . . . . . . . .
     do
       echo -n "${blue}${exp}${color_init}"
-      sleep 0.2
+      sleep 0.1
     done
     
     clear;
@@ -67,6 +67,11 @@ check_shell_file() {
     name=$(cat .services.whitelist | head -$num | tail -1)
     shell_file="${name}/${name}.sh"
   else
+    grep -w $1 .services.whitelist
+    if [ $? -ne 0 ]; then
+      echo_red "\"$1\" is not found. need to read \"how to develop\" in README.md"
+      exit 127
+    fi
     shell_file="$1/$1.sh"
   fi
   
