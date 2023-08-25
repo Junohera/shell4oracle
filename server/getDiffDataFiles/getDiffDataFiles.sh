@@ -18,7 +18,7 @@ loadDirectoriesByQuery() {
             from dba_temp_files
            order by type, file_id);
   "
-  result=$(sh ./log.sh "$query")
+  result=$(sh "${PARENT_PATH}log/log.sh" "$query")
   
   echo "$result" > $directories
 }
@@ -42,7 +42,7 @@ loadLogicalDatafiles() {
             from dba_temp_files
            order by type, file_id);
   "
-  result=$(sh ./log.sh "$query")
+  result=$(sh "${PARENT_PATH}log/log.sh" "$query")
   
   echo "$result" > $logicals
 }
@@ -70,7 +70,7 @@ getDeleteTargets() {
 
   echo ";" >> "$0.get_delete_target"
 
-  result=$(sh ./log.sh "$(cat "$0.get_delete_target")" "GET_DELETE_TARGETS(LOGICAL-PHYSICAL)")
+  result=$(sh "${PARENT_PATH}log/log.sh" "$(cat "$0.get_delete_target")" "GET_DELETE_TARGETS(LOGICAL-PHYSICAL)")
   echo "$result"
 }
 # get missing target: logical minus physical
@@ -97,7 +97,7 @@ getMissingTargets() {
 
   echo ";" >> "$0.get_missing_target"
 
-  result=$(sh ./log.sh "$(cat "$0.get_missing_target")" "GET_MISSING_TARGETS(PHYSICAL-LOGICAL)")
+  result=$(sh "${PARENT_PATH}log/log.sh" "$(cat "$0.get_missing_target")" "GET_MISSING_TARGETS(PHYSICAL-LOGICAL)")
   echo "$result"
 }
 
