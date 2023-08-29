@@ -115,3 +115,26 @@ sh Manager.sh
 4. 용량 최적화를 위해 백업폴더경로를 입력받아 특정 날짜지난 폴더 정리
 5. 크론탭 관리 폴더 추가
 6. manager.sh에서 경로 설정하는 부분 수정($0을 통해서가 아닌 실행중인 쉘파일 기준에서))
+7. session kill program
+```sql
+-- 참고 쿼리(lock_object와의 상관관계를 포함하여 lock걸린 상태의 session과 일반상태의 session 분리하여 관리할 수 있도록)
+select distinct
+       a.username,
+       a.inst_id,
+       a.serial#,
+       a.status,
+       a.machine,
+       a.osuser,
+       a.terminal,
+       a.client_info,
+       a.program,
+       a.prev_exec_start,
+       s.sql_text,
+       a.logon_time,
+       'alter system kill session '''||a.sid||', '||a.serial#||''';' as kill_command
+  from gv$session a
+  left outer join gv$sqlarea s
+    on a.sql_id = s.sql_id
+ where a.username is not null
+ order by a.username, a.logon_time;
+```
