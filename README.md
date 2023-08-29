@@ -138,3 +138,4 @@ select distinct
  where a.username is not null
  order by a.username, a.logon_time;
 ```
+8. 파라미터 설정갑 확인 program
