@@ -12,17 +12,18 @@ clear;
 # 1. export path
 export_path () {
   CURRENT_PATH=$(dirname $(realpath $0))
-  PROJECT_PATH=$(cd $CURRENT_PATH; cd ../; pwd)
-
-  cd $CURRENT_PATH || exit
-
-  MANAGER_PATH=$CURRENT_PATH
+  cd $CURRENT_PATH
+  MANAGER_PATH=$(echo $(pwd))
+  cd ../
+  PROJECT_PATH=$(echo $(pwd))
   export MANAGER_PATH
   export PROJECT_PATH
+
+  cd $MANAGER_PATH
 }
 # 2. set environment
 set_environment () {
-  . ./.color.env
+  . "${PROJECT_PATH}/.color/.color.env"
 }
 # 3. load_whitelist_shell_file
 load_whitelist_shell_file () {

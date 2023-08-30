@@ -1,19 +1,5 @@
 #!/bin/sh
 
-OUTPUT="$(date +%F%N)"
-echo_red "$OUTPUT(red)"
-echo_black "$OUTPUT(black)"
-echo_blue "$OUTPUT(blue)"
-echo_red "$OUTPUT(red)"
-echo_purple "$OUTPUT(purple)"
-echo_green "$OUTPUT(green)"
-echo_cyan "$OUTPUT(cyan)"
-echo_brown "$OUTPUT(brown)"
-echo_white "$OUTPUT(white)"
-echo_basic "$OUTPUT(basic)"
-echo_bold "$OUTPUT(bold)"
-echo_under "$OUTPUT(under)"
-echo_glow "$OUTPUT(glow)"
-echo_inv "$OUTPUT(inv)"
-echo_au "$OUTPUT(au)"
-echo_uu "$OUTPUT(uu)"
+cd $PROJECT_PATH
+echo $(pwd)
+sh ".color/sample.sh"
