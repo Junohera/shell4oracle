@@ -6,7 +6,7 @@ cd "${current_path}"
 cd ../
 
 # load profile
-. loadProfile/loadProfile.sh scott
+. loadProfile/loadProfile.sh system
 
 query="
   select to_char(sysdate + level, 'YYYYMMDD HH24:MI:SS') as yyyymmdd
