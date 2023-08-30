@@ -17,4 +17,4 @@ ${query}
 exit;
 _eof_
 )
-echo $result
+LOG_INFO $result

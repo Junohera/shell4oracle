@@ -1,8 +1,7 @@
 #!/bin/sh
 
 clear;
-current_path=$(dirname $(realpath $0))
-. "${current_path}/.color.env"
+. "$(dirname $(realpath $0))/.color.env"
 
 ECHO_BLACK_BOLD 'TRACE: 가장 낮은 레벨로, 디버깅에 사용됩니다. 코드 내부에서 상세한 정보를 로깅할 때 사용됩니다.'
 ECHO_YELLOW_BOLD 'DEBUG: 디버그용 로깅 레벨로, 애플리케이션의 실행 중에 상세한 정보를 제공합니다. 개발 중에 문제를 진단하는 데 사용됩니다.'

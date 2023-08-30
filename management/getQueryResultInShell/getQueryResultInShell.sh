@@ -23,9 +23,9 @@ _eof_
 )
 if [ $? -ne 0 ]; 
 then
-  echo_red "$result"
+  LOG_ERROR "$result"
 else
-  echo "$result"
+  LOG_INFO "$result"
 fi
 
 

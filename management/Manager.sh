@@ -16,14 +16,20 @@ export_path () {
   MANAGER_PATH=$(echo $(pwd))
   cd ../
   PROJECT_PATH=$(echo $(pwd))
+  ENV_PATH=$(echo $(pwd)/.env)
   export MANAGER_PATH
   export PROJECT_PATH
+  export ENV_PATH
+
+  echo "MANAGER_PATH is ${MANAGER_PATH}"
+  echo "PROJECT_PATH is ${PROJECT_PATH}"
+  echo "ENV_PATH is ${ENV_PATH}"
 
   cd $MANAGER_PATH
 }
 # 2. set environment
 set_environment () {
-  . "${PROJECT_PATH}/.color/.color.env"
+  . "${ENV_PATH}/.log.env"
 }
 # 3. load_whitelist_shell_file
 load_whitelist_shell_file () {
