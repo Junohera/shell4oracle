@@ -1,8 +1,7 @@
 #!/bin/sh
 
 clear;
-current_path=$(dirname $(realpath $0))
-. "${current_path}/.color.env"
+. "$(dirname $(realpath $0))/.color.env"
 
 tempfile1="${current_path}/.temp1.sample.sh"
 tempfile2="${current_path}/.temp2.sample.sh"

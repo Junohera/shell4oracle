@@ -18,7 +18,7 @@ LOG_START() {
   export operation_time_start=$(echo $(date +%S))
 
   LOG ""
-  LOG "======= TRY CONNECTION AT: $(date +%FT) ========"
+  LOG "======= TRY CONNECTION AT: $(date +%F' '%T) ========"
   LOG "$queryname"
   LOG "-------------------- INFO ---------------------"
   LOG "    TAG= $tag"
@@ -38,22 +38,17 @@ LOG_END() {
   LOG "-------------------- DONE ---------------------"
   LOG "    TAG= $tag"
   LOG "operation time: $operation_time"
-  LOG "======= SUCCESS AT: $(date +%FT) ==============="
+  LOG "======= SUCCESS AT: $(date +%F' '%T) ==============="
 }
 #################### INITIALIZE ####################
-username="scott"
-password="oracle"
-pagesize=0
-linesize=1000
-
 query="$(echo "$1" | sed '/^$/d')"
 #################### PLAYGROUND ####################
 LOG_START
-result=$(sqlplus -S ${username}/${password} <<EOF
+result=$(sqlplus -S ${db_user_name}/${db_password} <<EOF
 set head off
 set feedback off
-set pagesize ${pagesize}
-set linesize ${linesize}
+set pagesize ${db_pagesize}
+set linesize ${db_linesize}
 ${query}
 exit;
 EOF

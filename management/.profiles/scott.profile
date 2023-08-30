@@ -1,4 +1,4 @@
 username=scott
 password=oracle
-pagesize=1
+pagesize=0
 linesize=1000

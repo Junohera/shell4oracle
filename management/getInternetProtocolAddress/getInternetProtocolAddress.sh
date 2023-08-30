@@ -6,4 +6,4 @@ ifconfig |
   awk -F" " '{print $NF}' > "$0.temp"
 RESULT="$(cat "$0.temp")"
 rm "$0.temp"
-echo "$RESULT"
+LOG_DEBUG $RESULT

@@ -1,12 +1,10 @@
 #!/bin/sh
 
 # move management
-current_path=$(dirname $(realpath $0))
-cd "${current_path}"
-cd ../
+cd $MANAGER_PATH;
 
 # load profile
-. loadProfile/loadProfile.sh scott
+. loadProfile/loadProfile.sh system
 
 query="
   select to_char(sysdate + level, 'YYYYMMDD HH24:MI:SS') as yyyymmdd
@@ -23,9 +21,7 @@ _eof_
 )
 if [ $? -ne 0 ]; 
 then
-  echo_red "$result"
+  LOG_ERROR "$result"
 else
-  echo "$result"
+  LOG_INFO "$result"
 fi
-
-

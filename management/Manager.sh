@@ -1,38 +1,37 @@
 #!/bin/sh
 clear;
-# 0. export project root path
-# 1. set environment
-# 2. load_whitelist_shell_file
-# 3. check shell file
-#   3-1. suggest shell file
-# 4. execute shell file
-###########################################
-# 0. export project root path
-export_project_root_path () {
-  local full_path
-  local file
-  local name
 
-  full_path=$0
-  file=$(echo $full_path | awk -F"/" '{print $NF}')
-  name=$(echo $file | awk -F"." '{print $1}')
+# example: sh Manager.sh
 
-  if [ $full_path = $file ]; 
-  then
-    PROJECT_ROOT=$(pwd)
-  else
-    PROJECT_ROOT=$(echo $full_path | awk -F"$file" '{print $1}')    
-  fi 
+# 1. export path
+# 2. set environment
+# 3. load_whitelist_shell_file
+# 4. check shell file
+# 5. execute shell file
+####################################################################################################
+# 1. export path
+export_path () {
+  CURRENT_PATH=$(dirname $(realpath $0))
+  cd $CURRENT_PATH
+  MANAGER_PATH=$(echo $(pwd))
+  cd ../
+  PROJECT_PATH=$(echo $(pwd))
+  ENV_PATH=$(echo $(pwd)/.env)
+  export MANAGER_PATH
+  export PROJECT_PATH
+  export ENV_PATH
 
-  # echo "full_path : ${full_path}"; echo "file : ${file}"; echo "name : ${name}"; echo "PROJECT_ROOT : ${PROJECT_ROOT}";
-  export PROJECT_ROOT  
+  echo "MANAGER_PATH is ${MANAGER_PATH}"
+  echo "PROJECT_PATH is ${PROJECT_PATH}"
+  echo "ENV_PATH is ${ENV_PATH}"
+
+  cd $MANAGER_PATH
 }
-# 1. set environment
+# 2. set environment
 set_environment () {
-  cd $PROJECT_ROOT || exit
-  . ./.color.env
+  . "${ENV_PATH}/.log.env"
 }
-# 2. load_whitelist_shell_file
+# 3. load_whitelist_shell_file
 load_whitelist_shell_file () {
   all="$(find ./ -mindepth 1 -maxdepth 1 -type d | awk -F"/" '{print $NF}')"
 
@@ -45,7 +44,7 @@ load_whitelist_shell_file () {
     fi
   done
 }
-# 3. check shell file
+# 4. check shell file
 check_shell_file() {
   if [ $# -lt 1 ]; 
   then
@@ -75,24 +74,23 @@ check_shell_file() {
     shell_file="$1/$1.sh"
   fi
   
-  echo "pwd: $(pwd)"
-  echo "shell_file: $shell_file"
-  ls "${shell_file}" #2> /dev/null
+  ls "${shell_file}"
   if [ $? -eq 2 ]; then
     echo_red "${shell_file} is not exists."
     exit
   fi
 
-  export shell_file
+  shell_file
 }
-# 4. execute shell file
+# 5. execute shell file
 execute_shell_file() {
   clear
   sh $shell_file
 }
-###########################################
-export_project_root_path
+####################################################################################################
+export_path
 set_environment
 load_whitelist_shell_file
 check_shell_file "$@"
 execute_shell_file "$@"
+####################################################################################################

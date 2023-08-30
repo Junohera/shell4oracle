@@ -9,6 +9,8 @@ create tablespace test_for_another_path
                   
 alter tablespace test_for_another_path drop datafile '/oracle12/app/oracle/oradata/db1/another/test_for_another_path-02.dbf';
 rm /oracle12/app/oracle/oradata/db1/another/test_for_another_path-03.dbf
+touch /oracle12/app/oracle/oradata/db1/another/fake.dbf
+touch /oracle12/app/oracle/oradata/db1/fake.dbf
 ```
 ```sql
 select 'data' as type, file_name, file_id

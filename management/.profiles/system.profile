@@ -1,4 +1,4 @@
 username=system
 password=oracle
-pagesize=1
+pagesize=0
 linesize=2000

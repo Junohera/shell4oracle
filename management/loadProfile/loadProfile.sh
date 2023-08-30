@@ -8,9 +8,7 @@
 # echo "db_linesize is ${db_linesize}"
 
 # move management
-current_path=$(dirname $(realpath $0))
-cd "${current_path}"
-cd ../
+cd $MANAGER_PATH
 
 # move .profiles
 cd .profiles
@@ -47,3 +45,10 @@ if [ $ACTOR != $db_user_name ]; then
   echo_red "username is invalid.(${ACTOR} <> ${db_user_name})"
   exit 255
 fi
+
+export db_user_name
+export db_password
+export db_pagesize
+export db_linesize
+
+cd $MANAGER_PATH
