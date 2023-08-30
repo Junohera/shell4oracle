@@ -1,21 +1,29 @@
 #!/bin/sh
 
-CURRENT_PATH=$(dirname $(realpath $0))
-cd $CURRENT_PATH || exit
+# load profile
+. loadProfile/loadProfile.sh system
 
-echo "$CURRENT_PATH"
-echo "$"
-
-. "${MANAGER_PATH}/loadProfile/loadProfile.sh" system
-
+cd getDiffDataFiles
 prefix="$(echo $0 | awk -F"/" '{print $1}')"
 
-if [ ! -d .temp ]; then mkdir .temp; fi
-directories=".temp/${prefix}.directories"
-physicals=".temp/${prefix}.physical"
-logicals=".temp/${prefix}.logical"
-delete_target=".temp/${prefix}.delete_target"
-missing_target=".temp/${prefix}.missing_target"
+# create temp 4 shell
+createTemp4Shell() {
+  if [ ! -d .temp ]; then mkdir .temp; fi
+  directories=".temp/directories"
+  physicals=".temp/physicals"
+  logicals=".temp/logicals"
+  delete_target=".temp/delete_target"
+  missing_target=".temp/missing_target"
+}
+# clear temp 4 shell
+clearTemp4Shell() {
+  if [ -f $directories ]; then rm $directories; fi
+  if [ -f $physicals ]; then rm $physicals; fi
+  if [ -f $logicals ]; then rm $logicals; fi
+  if [ -f $delete_target ]; then rm $delete_target; fi
+  if [ -f $missing_target ]; then rm $missing_target; fi
+  if [ -d .temp ]; then rm -r .temp; fi
+}
 
 # load distinct directories by query
 loadDirectoriesByQuery() {
@@ -111,8 +119,14 @@ getMissingTargets() {
   echo "$result"
 }
 
+createTemp4Shell
+
 loadDirectoriesByQuery
 loadPhysicalDatafiles
 loadLogicalDatafiles
-getDeleteTargets
-getMissingTargets
+echo "DELETE DATAFILES"
+LOG_WARN "$(getDeleteTargets)"
+echo "MISSING DATAFILES"
+LOG_FATAL "$(getMissingTargets)"
+
+clearTemp4Shell
