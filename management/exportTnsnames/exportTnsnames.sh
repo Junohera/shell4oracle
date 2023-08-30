@@ -2,16 +2,13 @@
 
 clear
 
-FULL_PATH=$0
-FILE=$(echo $FULL_PATH | awk -F"/" '{print $NF}')
-NAME=$(echo $FILE | awk -F"." '{print $1}')
-CURRENT_PATH=$(echo $FULL_PATH | awk -F"$FILE" '{print $1}' )
-PARENT_PATH=$(echo $FULL_PATH | awk -F"$NAME" '{print $1}')
+cd $MANAGER_PATH;
+echo $(pwd)
 
-IP=$(sh "${PARENT_PATH}getInternetProtocolAddress/getInternetProtocolAddress.sh")
+IP=$(sh "getInternetProtocolAddress/getInternetProtocolAddress.sh")
 PORT=1521
 SERVER_MODE=DEDICATED
-SERVICE_NAME=$(sh "${PARENT_PATH}getServiceName/getServiceName.sh")
+SERVICE_NAME=$(sh "getServiceName/getServiceName.sh")
 ALIAS=$SERVICE_NAME
 
 TEMPLATE='
@@ -33,4 +30,5 @@ APPLIED=$(
     sed 's/${SERVICE_NAME}/'"${SERVICE_NAME}"'/g' |
     sed '/^$/d'
 )
-echo "$APPLIED"
+# ECHO_NORMALIZE "$APPLIED" > .temp
+LOG_DEBUG "$APPLIED"
