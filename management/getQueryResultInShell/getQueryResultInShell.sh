@@ -1,9 +1,7 @@
 #!/bin/sh
 
 # move management
-current_path=$(dirname $(realpath $0))
-cd "${current_path}"
-cd ../
+cd $MANAGER_PATH;
 
 # load profile
 . loadProfile/loadProfile.sh system
@@ -27,5 +25,3 @@ then
 else
   LOG_INFO "$result"
 fi
-
-
