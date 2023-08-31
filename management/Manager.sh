@@ -48,25 +48,39 @@ check_shell_file() {
     LOG_WARN "Warning: No shell file was specified to run. (example: sh Agent.sh 'sample')"
     LOG_WARN "but, i will suggest."
     echo -n "${blue}wait ${color_init}"
-    # for exp in . . . . . . . . . .
-    # do
-    #   echo -n "${blue}${exp}${color_init}"
-    #   sleep 0.1
-    # done
     
     clear;
+    lines=$(cat .services.whitelist | wc -l)
+
     cat -n .services.whitelist
-    echo -n "Enter number(q: quit): "
+    echo -n "$(echo "Enter number(number(")$(ECHO_RED "1~${lines}")$(echo ") or ")$(ECHO_BLUE "q")$(echo "(quit)")"
     read num
-    
+
     if [ $num = "q" ]; then
       clear
       LOG_INFO "DONE."
       exit
     fi
 
-    name=$(cat .services.whitelist | head -$num | tail -1)
-    shell_file="${name}/${name}.sh"
+    if [ ${num} -le ${lines} ] && [ ${num} -gt 0 ]
+    then
+      name=$(cat .services.whitelist | head -$num | tail -1)
+      echo "$name"
+      shell_file="${name}/${name}.sh"
+    else
+      clear
+      if [ ${num} -gt ${lines} 2> /dev/null ]; then 
+        echo -n $(ECHO_RED_DOUBLE "Entered Number(${num}) is greather than ${lines} "); wait; read;
+        continue
+      fi
+      if [ ${num} -le 0 2> /dev/null ]; then
+        echo -n $(ECHO_BLUE_DOUBLE "Entered Number(${num}) is less than 0 "); wait; read;
+        continue
+      fi
+      
+      echo -n $(ECHO_MAGENTA_WHITE_GLOW "Give you one more chance, so read and type carefully"); wait; read;
+      continue
+    fi
   else
     grep -w $1 .services.whitelist
     if [ $? -ne 0 ]; then
@@ -89,17 +103,20 @@ execute_shell_file() {
   clear
   sh $shell_file
   echo -n "Enter any key "
+  wait
+  read next
+}
+# 6. wait
+wait () {
   exps=("\033[31m" " . " "\033[0m" "\033[32m" " . " "\033[0m" "\033[33m" " . " "\033[0m" "\033[34m" " . " "\033[0m" "\033[35m" " . " "\033[0m" "\033[36m" " . " "\033[0m" "\033[37m" " . " "\033[0m")
-  quotient=$(expr ${#exps[@]} / 3)
   for ((i = 0; i < ${#exps[@]}; i += 3)); do
     open="${exps[i]}"
     exp="${exps[i+1]}"
     close="${exps[i+2]}"
 
     echo -e -n "${open}${exp}${close}"
-    sleep 0.1
+    sleep 0.03
   done
-  read next
 }
 ####################################################################################################
 export_path
