@@ -102,9 +102,14 @@ check_shell_file() {
 execute_shell_file() {
   clear
   sh $shell_file
-  echo -n "Enter any key "
+  echo -n "Enter any key(if q then quit.) "
   wait
   read next
+
+  if [ $next = "q" ]; then
+    LOG_INFO "DONE."
+    exit
+  fi
 }
 # 6. wait
 wait () {
