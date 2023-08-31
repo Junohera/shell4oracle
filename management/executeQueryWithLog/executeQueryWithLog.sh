@@ -69,6 +69,8 @@ EOF
 if [ $? -ne 0 ]; 
 then
   FAILURE "$result"
+  exit 255
 else
   SUCCESS "$result"
+  echo "$result"
 fi
