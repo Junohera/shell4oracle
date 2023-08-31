@@ -117,7 +117,6 @@ if [ $? -ne 0 ]; then
   LOG_INFO "when Permission denied (chown -R oracle:oinstall $BACKUP_DIRECTORY)"
   exit 255
 fi
-
 LOG_INFO "BACKUP_CONTROLFILE_PATH: $(ls $BACKUP_CONTROLFILE_PATH)"
 TRACE_END
 
@@ -128,6 +127,7 @@ result="$(
   "$query" "SHUTDOWN IMMEDIATE" "$logging_file" "as sysdba"
 )"
 if [ $? -ne 0 ]; then LOG_ERROR "$result"; exit 255; fi
+LOG_INFO "$result"
 TRACE_END
 
 TRACE_START "PHYSICAL BACKUP"
@@ -141,6 +141,7 @@ result="$(
   "$query" "STARTUP OPEN" "$logging_file" "as sysdba"
 )"
 if [ $? -ne 0 ]; then LOG_ERROR "$result"; exit 255; fi
+LOG_INFO "$result"
 TRACE_END
 
 TRACE_START "CHECK STATUS AFTER STARTUP OPEN"
@@ -150,6 +151,5 @@ result="$(
   "$query" "CHECK STATUS AFTER STARTUP OPEN" "$logging_file" "as sysdba"
 )"
 if [ $? -ne 0 ]; then LOG_ERROR "$result"; exit 255; fi
-
 LOG_INFO "$result"
 TRACE_END
