@@ -7,3 +7,4 @@
 *.directories
 *.logical
 *.physical
+*.config
