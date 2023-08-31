@@ -56,9 +56,15 @@ check_shell_file() {
     
     clear;
     cat -n .services.whitelist
-    echo -n "Enter number: "
+    echo -n "Enter number(q: quit): "
     read num
     
+    if [ $num = "q" ]; then
+      clear
+      LOG_INFO "DONE."
+      exit
+    fi
+
     name=$(cat .services.whitelist | head -$num | tail -1)
     shell_file="${name}/${name}.sh"
   else
@@ -82,11 +88,26 @@ check_shell_file() {
 execute_shell_file() {
   clear
   sh $shell_file
+  echo -n "Enter any key "
+  exps=("\033[31m" " . " "\033[0m" "\033[32m" " . " "\033[0m" "\033[33m" " . " "\033[0m" "\033[34m" " . " "\033[0m" "\033[35m" " . " "\033[0m" "\033[36m" " . " "\033[0m" "\033[37m" " . " "\033[0m")
+  quotient=$(expr ${#exps[@]} / 3)
+  for ((i = 0; i < ${#exps[@]}; i += 3)); do
+    open="${exps[i]}"
+    exp="${exps[i+1]}"
+    close="${exps[i+2]}"
+
+    echo -e -n "${open}${exp}${close}"
+    sleep 0.1
+  done
+  read next
 }
 ####################################################################################################
 export_path
 set_environment
-load_whitelist_shell_file
-check_shell_file "$@"
-execute_shell_file "$@"
+
+while [ 1 ]; do
+  load_whitelist_shell_file
+  check_shell_file "$@"
+  execute_shell_file "$@"
+done
 ####################################################################################################
