@@ -109,7 +109,6 @@ sh Manager.sh
 **~~getInternetProtocolAddress(window)~~**: ipconfig 결과 가공
 ---
 # TODO
-1. log위치 입력받아 저장
 2. offlinebackup restore를 동적으로 경로를 받아와 구현
 3. onlinebackup restore를 동적으로 경로를 받아와 구현
 4. 용량 최적화를 위해 백업폴더경로를 입력받아 특정 날짜지난 폴더 정리
