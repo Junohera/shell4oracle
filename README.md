@@ -69,9 +69,9 @@ result=$(sh executeQueryWithLog.sh 'select * from dba_tablespaces;' getTablespac
 if [ $? -eq 0 ]; then echo "${result}"; else echo_red "${result}"; fi
 ```
 ### services
-1. TODO:_executeQueryWithLog: 입력받은 쿼리를 수행하고, 결과반환 및 로깅
+1. _executeQueryWithLog: 입력받은 쿼리를 수행하고, 결과반환 및 로깅
 1. +exportTnsnames: 클라이언트에서 접근하기위한 tnsnames.ora 파일에 추가해야할 내용 반환
-1. TODO:+getDiffDataFiles: 모든 datafile과 모든 tempfile들을 논리집합, 물리집합으로 구분하여 누락된 데이터파일과 제거해야할 데이터파일을 색출
+1. +getDiffDataFiles: 모든 datafile과 모든 tempfile들을 논리집합, 물리집합으로 구분하여 누락된 데이터파일과 제거해야할 데이터파일을 색출
 1. TODO:+getGapAnalysis: A B 간의 갭 조회
 1. +getInternetProtocolAddress: ip 반환
 1. +getQueryResultInShell: 샘플 쿼리 결과 조회 shell
