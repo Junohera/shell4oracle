@@ -101,7 +101,7 @@ TRACE_START "CHECK STATUS BEFORE EXECUTE QUERY"
 query="select instance_name, status from v\$instance;"
 result="$(
   sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh"\
-  "$query" "CHECK_STATUS" "$logging_file"
+  "$query" "$TRACE_CONTEXT" "$logging_file"
 )"
 if [ $? -ne 0 ]; then LOG_ERROR "$result"; exit 255; fi
 TRACE_END
@@ -110,7 +110,7 @@ TRACE_START "EXECUTE QUERY FOR BACKUP CONTROL FILE GENERATION SCRIPT"
 query="alter database backup controlfile to trace as $BACKUP_CONTROLFILE_PATH_FOR_QUERY;"
 result="$(
   sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh"\
-  "$query" "CREATE " "$logging_file"
+  "$query" "$TRACE_CONTEXT" "$logging_file"
 )"
 if [ $? -ne 0 ]; then
   LOG_ERROR "$result"
@@ -124,7 +124,7 @@ TRACE_START "SHUTDOWN IMMEDIATE"
 query="shutdown immediate;"
 result="$(
   sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh"\
-  "$query" "SHUTDOWN IMMEDIATE" "$logging_file" "as sysdba"
+  "$query" "$TRACE_CONTEXT" "$logging_file" "as sysdba"
 )"
 if [ $? -ne 0 ]; then LOG_ERROR "$result"; exit 255; fi
 LOG_INFO "$result"
@@ -138,7 +138,7 @@ TRACE_START "STARTUP OPEN"
 query="startup open;"
 result="$(
   sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh"\
-  "$query" "STARTUP OPEN" "$logging_file" "as sysdba"
+  "$query" "$TRACE_CONTEXT" "$logging_file" "as sysdba"
 )"
 if [ $? -ne 0 ]; then LOG_ERROR "$result"; exit 255; fi
 LOG_INFO "$result"
@@ -148,7 +148,7 @@ TRACE_START "CHECK STATUS AFTER STARTUP OPEN"
 query="select instance_name, status from v\$instance;"
 result="$(
   sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh"\
-  "$query" "CHECK STATUS AFTER STARTUP OPEN" "$logging_file" "as sysdba"
+  "$query" "$TRACE_CONTEXT" "$logging_file"
 )"
 if [ $? -ne 0 ]; then LOG_ERROR "$result"; exit 255; fi
 LOG_INFO "$result"
