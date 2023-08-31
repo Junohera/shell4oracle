@@ -137,4 +137,4 @@ LOG_WARN "$(getDeleteTargets)"
 LOG_INFO "MISSING DATAFILES"
 LOG_FATAL "$(getMissingTargets)"
 
-# clearTemp4Shell # If you want to see a history of our internal procedures, uncomment and check the .temp directory
+# clearTemp4Shell # If you want to see a history of our internal procedures, comment and check the .temp directory
