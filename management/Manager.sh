@@ -21,10 +21,6 @@ export_path () {
   export PROJECT_PATH
   export ENV_PATH
 
-  echo "MANAGER_PATH is ${MANAGER_PATH}"
-  echo "PROJECT_PATH is ${PROJECT_PATH}"
-  echo "ENV_PATH is ${ENV_PATH}"
-
   cd $MANAGER_PATH
 }
 # 2. set environment
@@ -49,8 +45,8 @@ check_shell_file() {
   if [ $# -lt 1 ]; 
   then
     #   3-1. suggest shell file
-    echo_red "Warning: No shell file was specified to run. (example: sh Agent.sh 'sample')"
-    echo_blue "but, i will suggest."
+    LOG_WARN "Warning: No shell file was specified to run. (example: sh Agent.sh 'sample')"
+    LOG_WARN "but, i will suggest."
     echo -n "${blue}wait ${color_init}"
     # for exp in . . . . . . . . . .
     # do
@@ -68,7 +64,7 @@ check_shell_file() {
   else
     grep -w $1 .services.whitelist
     if [ $? -ne 0 ]; then
-      echo_red "\"$1\" is not found. need to read \"how to develop\" in README.md"
+      LOG_WARN "\"$1\" is not found. need to read \"how to develop\" in README.md"
       exit 127
     fi
     shell_file="$1/$1.sh"
@@ -76,7 +72,7 @@ check_shell_file() {
   
   ls "${shell_file}"
   if [ $? -eq 2 ]; then
-    echo_red "${shell_file} is not exists."
+    LOG_ERROR "${shell_file} is not exists."
     exit
   fi
 

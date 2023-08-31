@@ -5,6 +5,10 @@
 
 cd getDiffDataFiles
 prefix="$(echo $0 | awk -F"/" '{print $1}')"
+logging_directory="${MANAGER_PATH}/${prefix}/.log"
+logging_file="${logging_directory}/$(echo $(date +%Y%m%d%H)).txt"
+if [ ! -d logging_directory ]; then mkdir -p $logging_directory; fi
+if [ ! -f logging_file ]; then touch $logging_file; fi
 
 # create temp 4 shell
 createTemp4Shell() {
@@ -36,7 +40,11 @@ loadDirectoriesByQuery() {
             from dba_temp_files
            order by type, file_id);
   "
-  result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$query")
+  result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$query" "GET_UNIQUE_DIRECTORIES" "$logging_file")
+  if [ $? -ne 0 ]; then
+    LOG_ERROR "$result"
+    exit 255
+  fi
   
   echo "$result" > $directories
 }
@@ -60,7 +68,7 @@ loadLogicalDatafiles() {
             from dba_temp_files
            order by type, file_id);
   "
-  result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$query")
+  result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$query" 'GET_UNIQUE_DIRECTORIES' "$logging_file")
   
   echo "$result" > $logicals
 }
@@ -88,7 +96,7 @@ getMissingTargets() {
 
   echo ";" >> "${missing_target}"
 
-  result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$(cat "${missing_target}")" "GET_MISSING_TARGETS(LOGICAL-PHYSICAL)")
+  result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$(cat "${missing_target}")" "GET_MISSING_TARGETS(LOGICAL-PHYSICAL)" "$logging_file")
   echo "$result"
 }
 # get delete target: physical minus logical
@@ -115,7 +123,7 @@ getDeleteTargets() {
 
   echo ";" >> "${delete_target}"
 
-  result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$(cat "${delete_target}")" "GET_DELETE_TARGETS(PHYSICAL-LOGICAL)")
+  result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$(cat "${delete_target}")" "GET_DELETE_TARGETS(PHYSICAL-LOGICAL)" "$logging_file")
   echo "$result"
 }
 
@@ -124,9 +132,9 @@ createTemp4Shell
 loadDirectoriesByQuery
 loadPhysicalDatafiles
 loadLogicalDatafiles
-echo "DELETE DATAFILES"
+LOG_INFO "DELETE DATAFILES"
 LOG_WARN "$(getDeleteTargets)"
-echo "MISSING DATAFILES"
+LOG_INFO "MISSING DATAFILES"
 LOG_FATAL "$(getMissingTargets)"
 
-clearTemp4Shell
+# clearTemp4Shell # If you want to see a history of our internal procedures, uncomment and check the .temp directory

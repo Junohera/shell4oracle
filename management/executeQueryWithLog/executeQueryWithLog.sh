@@ -2,8 +2,18 @@
 
 # sample
 # sh executeQueryWithLog.sh 'select 1 from dual;' 'test'
+# sh executeQueryWithLog.sh 'select 1 from dual;' 'test' '/test/log.txt'
 
 logging="$0.log"
+if [ $# -ge 3 ]; then
+  if ! [ -f $3 ]; then
+    LOG_ERROR "$3 is not exists. (to be safe, we don't initialize the log file)."
+    exit 1
+  fi
+
+  logging=$3
+fi
+
 queryname="$2"
 #################### DEFINITION ####################
 LOG() {

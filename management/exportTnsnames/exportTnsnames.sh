@@ -3,7 +3,6 @@
 clear
 
 cd $MANAGER_PATH;
-echo $(pwd)
 
 IP=$(sh "getInternetProtocolAddress/getInternetProtocolAddress.sh")
 PORT=1521
