@@ -18,14 +18,31 @@ createTemp4Shell() {
   logicals=".temp/logicals"
   delete_target=".temp/delete_target"
   missing_target=".temp/missing_target"
+  delete_target_result=".temp/delete_target_result"
+  missing_target_result=".temp/missing_target_result"
+  commands_for_delete_target_result=".temp/commands_for_delete_target_result"
+  commands_for_missing_target_result=".temp/commands_for_missing_target_result"
+  > $directories
+  > $physicals
+  > $logicals
+  > $delete_target
+  > $missing_target
+  > $delete_target_result
+  > $missing_target_result
+  > $commands_for_delete_target_result
+  > $commands_for_missing_target_result
 }
 # clear temp 4 shell
 clearTemp4Shell() {
-  if [ -f $directories ]; then rm $directories; fi
-  if [ -f $physicals ]; then rm $physicals; fi
-  if [ -f $logicals ]; then rm $logicals; fi
-  if [ -f $delete_target ]; then rm $delete_target; fi
-  if [ -f $missing_target ]; then rm $missing_target; fi
+  if [ -f directories ]; then rm $directories; fi
+  if [ -f physicals ]; then rm $physicals; fi
+  if [ -f logicals ]; then rm $logicals; fi
+  if [ -f delete_target ]; then rm $delete_target; fi
+  if [ -f missing_target ]; then rm $missing_target; fi
+  if [ -f delete_target_result ]; then rm $delete_target_result; fi
+  if [ -f missing_target_result ]; then rm $missing_target_result; fi
+  if [ -f commands_for_delete_target_result ]; then rm $commands_for_delete_target_result; fi
+  if [ -f commands_for_missing_target_result ]; then rm $commands_for_missing_target_result; fi
   if [ -d .temp ]; then rm -r .temp; fi
 }
 
@@ -97,6 +114,7 @@ getMissingTargets() {
   echo ";" >> "${missing_target}"
 
   result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$(cat "${missing_target}")" "GET_MISSING_TARGETS(LOGICAL-PHYSICAL)" "$logging_file")
+  echo "$result" > "$missing_target_result"
   echo "$result"
 }
 # get delete target: physical minus logical
@@ -124,7 +142,24 @@ getDeleteTargets() {
   echo ";" >> "${delete_target}"
 
   result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$(cat "${delete_target}")" "GET_DELETE_TARGETS(PHYSICAL-LOGICAL)" "$logging_file")
+  echo "$result" > "$delete_target_result"
   echo "$result"
+}
+# load command related targets
+loadCommandRelatedTargets() {
+  delete_target_result_lines=$(cat $delete_target_result | sed '/^$/d' | wc -l)
+  if [ $delete_target_result_lines -gt 0 ]; then
+    while IFS= read -r line; do
+      echo "rm $line;" >> "$commands_for_delete_target_result"
+    done < "$delete_target_result"
+  fi
+  
+  missing_target_result_lines=$(cat $missing_target_result | sed '/^$/d' | wc -l)
+  if [ $missing_target_result_lines -gt 0 ]; then
+    while IFS= read -r line; do
+      echo "TODO: $line" >> "$commands_for_missing_target_result"
+    done < "$missing_target_result"
+  fi
 }
 
 createTemp4Shell
@@ -136,5 +171,5 @@ LOG_INFO "DELETE DATAFILES"
 LOG_WARN "$(getDeleteTargets)"
 LOG_INFO "MISSING DATAFILES"
 LOG_FATAL "$(getMissingTargets)"
-
+loadCommandRelatedTargets
 # clearTemp4Shell # If you want to see a history of our internal procedures, comment and check the .temp directory
