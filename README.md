@@ -136,5 +136,5 @@ select distinct
  where a.username is not null
  order by a.username, a.logon_time;
 ```
-8. 파라미터 설정갑 확인 program
+8. 파라미터 설정값 확인 program
 9. 사용한 메뉴 history 기록 후, 종료시 반환
