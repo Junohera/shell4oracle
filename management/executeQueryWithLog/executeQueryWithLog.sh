@@ -15,7 +15,7 @@ LOG() {
 
 START() {
   export tag=$(echo $(date +%N%SS%M%H%d%m%Y))
-  export operation_time_start=$(echo $(date +%S))
+  export operation_time_start=$(echo $(date -d "$(date +"%F %T")" +%s))
 
   LOG ""
   LOG "======= TRY CONNECTION AT: $(date +%F" "%T) ========"
@@ -30,7 +30,7 @@ START() {
 }
 
 SUCCESS() {
-  operation_time_end=$(echo $(date +%S))
+  operation_time_end=$(echo $(date -d "$(date +"%F %T")" +%s))
   operation_time=$(($operation_time_end - $operation_time_start))
   
   LOG "-------------------- RESULT -------------------"
@@ -42,7 +42,7 @@ SUCCESS() {
 }
 
 FAILURE() {
-  operation_time_end=$(echo $(date +%S))
+  operation_time_end=$(echo $(date -d "$(date +"%F %T")" +%s))
   operation_time=$(($operation_time_end - $operation_time_start))
   LOG "💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥"
   LOG "-------------------- ERROR --------------------"
@@ -74,3 +74,4 @@ else
   SUCCESS "$result"
   echo "$result"
 fi
+exit

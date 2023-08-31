@@ -139,4 +139,3 @@ select distinct
  order by a.username, a.logon_time;
 ```
 8. 파라미터 설정갑 확인 program
-9. 다음의 에러 발생구간 찾아 디버깅 value too great for base (error token is "08"
