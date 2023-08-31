@@ -8,3 +8,4 @@
 *.logical
 *.physical
 **/.config
+management/offlineBackup/.config
