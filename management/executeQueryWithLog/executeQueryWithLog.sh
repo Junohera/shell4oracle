@@ -14,6 +14,15 @@ if [ $# -ge 3 ]; then
   logging=$3
 fi
 
+CONNECTION_INFO="${db_user_name}/${db_password}"
+AS_SYSDBA=0
+if [ $# -ge 4 ]; then
+  if [ "$4" = 'as sysdba' ]; then
+    CONNECTION_INFO=" / as sysdba"
+    AS_SYSDBA=1
+  fi
+fi
+
 queryname="$2"
 #################### DEFINITION ####################
 LOG() {
@@ -32,7 +41,12 @@ START() {
   LOG "$queryname"
   LOG "-------------------- INFO ---------------------"
   LOG "    TAG= $tag"
-  LOG "    username= $db_user_name"
+  if [ $AS_SYSDBA -eq 0 ];
+  then
+    LOG "    username= $db_user_name"
+  else
+    LOG "    connection= $CONNECTION_INFO"
+  fi
   LOG "    pagesize= $db_pagesize"
   LOG "    linesize= $db_linesize"
   LOG "-------------------- QUERY --------------------"
@@ -67,7 +81,7 @@ FAILURE() {
 query="$(echo "$1" | sed '/^$/d')"
 #################### PLAYGROUND ####################
 START
-result=$(sqlplus -S ${db_user_name}/${db_password} <<EOF
+result="$(sqlplus -S ${CONNECTION_INFO} <<EOF
 set head off
 set feedback off
 set pagesize ${db_pagesize}
@@ -75,7 +89,7 @@ set linesize ${db_linesize}
 ${query}
 exit;
 EOF
-)
+)"
 if [ $? -ne 0 ]; 
 then
   FAILURE "$result"
