@@ -44,6 +44,7 @@ clearTemp4Shell() {
   if [ -f commands_for_delete_target_result ]; then rm $commands_for_delete_target_result; fi
   if [ -f commands_for_missing_target_result ]; then rm $commands_for_missing_target_result; fi
   if [ -d .temp ]; then rm -r .temp; fi
+  if [ -d .log ]; then rm -r .log; fi
 }
 
 # load distinct directories by query
