@@ -48,6 +48,12 @@ if ! [ -d $BACKUP_DIRECTORY ]; then
   fi
 
   mkdir -p ${BACKUP_DIRECTORY}
+  if [ $? -ne 0 ]; then
+    LOG_ERROR "su - root"
+    LOG_ERROR "mkdir -p ${BACKUP_DIRECTORY}"
+    LOG_ERROR "chown -R oracle:oinstall ${BACKUP_DIRECTORY}"
+    exit 1
+  fi
 fi
 TRACE_END
 
