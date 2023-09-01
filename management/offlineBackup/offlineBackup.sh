@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# TODO:
+# 1. shutdown이든 startup이든 진행되게
+# 2. instance_name은 환경변수 $ORACLE_SID로부터
+# 3. 디렉토리에 online/offline 접두사 추가
 clear;
 
 prefix="$(echo $0 | awk -F"/" '{print $1}')"
@@ -59,7 +63,7 @@ if [ ! -f $logging_file ]; then touch $logging_file; fi
 TRACE_END
 
 TRACE_START "READ CONFIG FILE"
-config="${MANAGER_PATH}/offlineBackup/.config"
+config="${MANAGER_PATH}/${prefix}/.config"
 BACKUP_DIRECTORY=$(cat $config | sed '/^#/d' | grep 'BACKUP_DIRECTORY=' | awk -F= '{print $NF}');
 TRACE_END
 

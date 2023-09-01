@@ -77,6 +77,8 @@ if [ $? -eq 0 ]; then echo "${result}"; else echo_red "${result}"; fi
 1. +getQueryResultInShell: 샘플 쿼리 결과 조회 shell
 1. +getServicename: Service ID 조회
 1. _loadProfile: db profile 설정
+1. +offlineBackup: cold backup
+1. +offlineRestore: restore using cold backup files(TODO: restore using hot backup files)
 
 ### how to develop
 ```shell
@@ -109,11 +111,9 @@ sh Manager.sh
 **~~getInternetProtocolAddress(window)~~**: ipconfig 결과 가공
 ---
 # TODO
-2. offlinebackup restore를 동적으로 경로를 받아와 구현
-3. onlinebackup restore를 동적으로 경로를 받아와 구현
-4. 용량 최적화를 위해 백업폴더경로를 입력받아 특정 날짜지난 폴더 정리
-5. 크론탭 관리 폴더 추가
-7. session kill program
+1. 용량 최적화를 위해 백업폴더경로를 입력받아 특정 날짜지난 폴더 정리
+1. 크론탭 관리 폴더 추가
+1. session kill program
 ```sql
 -- 참고 쿼리(lock_object와의 상관관계를 포함하여 lock걸린 상태의 session과 일반상태의 session 분리하여 관리할 수 있도록)
 select distinct
@@ -136,5 +136,5 @@ select distinct
  where a.username is not null
  order by a.username, a.logon_time;
 ```
-8. 파라미터 설정값 확인 program
-9. 사용한 메뉴 history 기록 후, 종료시 반환
+1. 파라미터 설정값 확인 program
+1. 사용한 메뉴 history 기록 후, 종료시 반환
