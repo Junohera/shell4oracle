@@ -44,11 +44,6 @@ load_whitelist_shell_file () {
 check_shell_file() {
   if [ $# -lt 1 ]; 
   then
-    #   3-1. suggest shell file
-    LOG_WARN "Warning: No shell file was specified to run. (example: sh Agent.sh 'sample')"
-    LOG_WARN "but, i will suggest."
-    echo -n "${blue}wait ${color_init}"
-    
     clear;
     lines=$(cat .services.whitelist | wc -l)
 
@@ -105,8 +100,7 @@ execute_shell_file() {
   echo -n "Enter any key(if q then quit.) "
   wait
   read next
-
-  if [ $next = "q" ]; then
+  if [ "$next" = "q" ]; then
     LOG_INFO "DONE."
     exit
   fi

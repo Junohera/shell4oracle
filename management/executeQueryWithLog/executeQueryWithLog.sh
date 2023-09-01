@@ -34,48 +34,39 @@ LOG() {
 
 START() {
   export tag=$(echo $(date +%N%SS%M%H%d%m%Y))
-  export operation_time_start=$(echo $(date -d "$(date +"%F %T")" +%s))
+  export operation_time_start=$(date +%s)
 
   LOG ""
-  LOG "======= TRY CONNECTION AT: $(date +%F" "%T) ========"
+  LOG "========================================= TRY CONNECTION AT: $(date +%F" "%T) ============="
   LOG "$queryname"
-  LOG "-------------------- INFO ---------------------"
-  LOG "    TAG= $tag"
+  LOG "----------------------------------------- INFO #${tag} ---------------------"
   if [ $AS_SYSDBA -eq 0 ];
   then
-    LOG "    username= $db_user_name"
+    LOG "                                          username=${db_user_name}, pagesize=${db_pagesize}, linesize=${db_linesize}"
   else
-    LOG "    connection= $CONNECTION_INFO"
+    LOG "                                          connection=${CONNECTION_INFO}, pagesize=${db_pagesize}, linesize=${db_linesize}"
   fi
-  LOG "    pagesize= $db_pagesize"
-  LOG "    linesize= $db_linesize"
-  LOG "-------------------- QUERY --------------------"
+  LOG "----------------------------------------- QUERY ----------------------------------------------"
   LOG "$query"
 }
 
 SUCCESS() {
-  operation_time_end=$(echo $(date -d "$(date +"%F %T")" +%s))
+  operation_time_end=$(date +%s)
   operation_time=$(($operation_time_end - $operation_time_start))
   
-  LOG "-------------------- RESULT -------------------"
+  LOG "----------------------------------------- RESULT ---------------------------------------------"
   LOG "$result"
-  LOG "-------------------- DONE ---------------------"
-  LOG "    TAG= $tag"
-  LOG "operation time: $operation_time"
-  LOG "======= SUCCESS AT: $(date +%F" "%T) ==============="
+  LOG "----------------------------------------- ${operation_time}s #${tag} -----------------------"
+  LOG "========================================= SUCCESS AT: $(date +%F" "%T) ===================="
 }
 
 FAILURE() {
-  operation_time_end=$(echo $(date -d "$(date +"%F %T")" +%s))
+  operation_time_end=$(date +%s)
   operation_time=$(($operation_time_end - $operation_time_start))
-  LOG "💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥"
-  LOG "-------------------- ERROR --------------------"
+  LOG "----------------------------------------- ERROR ----------------------------------------------"
   LOG "$result"
-  LOG "-------------------- FAILURE ------------------"
-  LOG "    TAG= $tag"
-  LOG "operation time: $operation_time"
-  LOG "💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥"
-  LOG "======= FAILURE AT: $(date +%F" "%T) ==============="
+  LOG "----------------------------------------- ${operation_time}s #${tag} -----------------------"
+  LOG "========================================= FAILURE AT: $(date +%F" "%T) ===================="
 }
 #################### INITIALIZE ####################
 query="$(echo "$1" | sed '/^$/d')"
@@ -90,7 +81,7 @@ ${query}
 exit;
 EOF
 )"
-if [ $? -ne 0 ]; 
+if [ "$?" != "0" ]
 then
   FAILURE "$result"
   exit 255

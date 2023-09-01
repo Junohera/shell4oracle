@@ -50,13 +50,13 @@ clearTemp4Shell() {
 # load distinct directories by query
 loadDirectoriesByQuery() {
   query="
-  select distinct substr(file_name, 1, instr(file_name, '/', -1) - 1) as datafile_directory
-    from (select 'data' as type, file_name, file_id
-            from dba_data_files
-           union all
-          select 'temp' as type, file_name, file_id
-            from dba_temp_files
-           order by type, file_id);
+select distinct substr(file_name, 1, instr(file_name, '/', -1) - 1) as datafile_directory
+  from (select 'data' as type, file_name, file_id
+          from dba_data_files
+         union all
+        select 'temp' as type, file_name, file_id
+          from dba_temp_files
+         order by type, file_id);
   "
   result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$query" "GET_UNIQUE_DIRECTORIES" "$logging_file")
   if [ $? -ne 0 ]; then
@@ -78,13 +78,13 @@ loadPhysicalDatafiles() {
 loadLogicalDatafiles() {
 	> $logicals
   query="
-  select file_name
-    from (select 'data' as type, file_name, file_id
-            from dba_data_files
-           union all
-          select 'temp' as type, file_name, file_id
-            from dba_temp_files
-           order by type, file_id);
+select file_name
+  from (select 'data' as type, file_name, file_id
+          from dba_data_files
+         union all
+        select 'temp' as type, file_name, file_id
+          from dba_temp_files
+         order by type, file_id);
   "
   result=$(sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh" "$query" 'GET_UNIQUE_DIRECTORIES' "$logging_file")
   

@@ -1,39 +1,68 @@
 #!/bin/sh
 
+prefix="$(echo $0 | awk -F"/" '{print $1}')"
+
+START_SECOND=$(date +%s)
+
+BACKUP_DIRECTORY=""
+ORACLE_DATA=""
+ORACLE_DBS=$(echo ${ORACLE_HOME}/dbs)
+
 # SET TRACE
 TRACE_CONTEXT=""
+TRACE_AT_START=""
+TRACE_AT_END=""
 TRACE_START () { 
   TRACE_CONTEXT="$1"
-  LOG_TRACE "::: ${TRACE_CONTEXT} START :::";
+
+  TRACE_NOW=$(date +%F" "%T" "%N)
+  TRACE_AT_START_SECOND=$(date +%s)
+
+  LOG_TRACE "::: ${TRACE_NOW} ${TRACE_CONTEXT} START :::";
 }
 TRACE_END () {
-  LOG_TRACE "::: ${TRACE_CONTEXT} COMPLETE :::";
+  TRACE_NOW=$(date +%F" "%T" "%N)
+  TRACE_AT_END_SECOND=$(date +%s)
+  TRACE_OPERATION_TIME_SECOND=$(($TRACE_AT_END_SECOND - $TRACE_AT_START_SECOND))
+
+  if [ $TRACE_OPERATION_TIME_SECOND -gt 5 ];
+  then
+    LOG_WARN "::: ${TRACE_NOW} ${TRACE_CONTEXT} COMPLETE (${TRACE_OPERATION_TIME_SECOND}s):::";
+  else
+    LOG_TRACE "::: ${TRACE_NOW} ${TRACE_CONTEXT} COMPLETE (${TRACE_OPERATION_TIME_SECOND}s):::";
+  fi
 }
 
 TRACE_START "LOAD PROFILE START"
 . loadProfile/loadProfile.sh system
 TRACE_END
 
+TRACE_START "RECORD DISK INFORMATION INITIALIZING"
+temp_directory="${MANAGER_PATH}/${prefix}/.temp"
+temp_disk_info_before="${temp_directory}/disk_info_before.txt"
+temp_disk_info_after="${temp_directory}/disk_info_after.txt"
+temp_disk_info_diff="${temp_directory}/disk_info_diff.txt"
+if [ ! -d $temp_directory ]; then mkdir -p $temp_directory; fi
+TRACE_END
+
+TRACE_START "RECORD DISK INFORMATION BEFORE"
+echo "$(df | awk '{print $6" : "$5}')" > $temp_disk_info_before
+TRACE_END
+
 TRACE_START "LOGGING FILE INITIALIZING"
-prefix="$(echo $0 | awk -F"/" '{print $1}')"
-cd $prefix
 logging_directory="${MANAGER_PATH}/${prefix}/.log"
 logging_file="${logging_directory}/$(echo $(date +%Y%m%d%H%M)).txt"
-if [ ! -d logging_directory ]; then mkdir -p $logging_directory; fi
-if [ ! -f logging_file ]; then touch $logging_file; fi
+if [ ! -d $logging_directory ]; then mkdir -p $logging_directory; fi
+if [ ! -f $logging_file ]; then touch $logging_file; fi
 TRACE_END
 
 TRACE_START "READ CONFIG FILE"
 config="${MANAGER_PATH}/offlineBackup/.config"
 BACKUP_DIRECTORY=$(cat $config | sed '/^#/d' | grep 'BACKUP_DIRECTORY=' | awk -F= '{print $NF}');
-ORACLE_DATA=$(cat $config | sed '/^#/d' | grep 'ORACLE_DATA=' | awk -F= '{print $NF}');
-ORACLE_DBS=$(cat $config | sed '/^#/d' | grep 'ORACLE_DBS=' | awk -F= '{print $NF}');
 TRACE_END
 
 TRACE_START "VALIDATION DIRECTORY BY CONFIG FILE"
 if [ -z $BACKUP_DIRECTORY ];  then LOG_ERROR "BACKUP_DIRECTORY is not defined. (.config)"; exit 1; fi
-if [ -z $ORACLE_DATA ];       then LOG_ERROR "ORACLE_DATA is not defined. (.config)";      exit 1; fi
-if [ -z $ORACLE_DBS ];        then LOG_ERROR "ORACLE_DBS is not defined. (.config)";       exit 1; fi
 TRACE_END
 
 TRACE_START "CHECK BACKUP_DIRECTORY"
@@ -55,6 +84,35 @@ if ! [ -d $BACKUP_DIRECTORY ]; then
     exit 1
   fi
 fi
+TRACE_END
+
+TRACE_START "GET INSTANCE_NAME FOR FIND ORACLE_DATA_DIRECTORY_PATH"
+query="
+select instance_name
+  from v\$instance;"
+result="$(
+  sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh"\
+  "$query" "$TRACE_CONTEXT" "$logging_file"
+)"
+if [ $? -ne 0 ]; then LOG_ERROR "$result"; LOG_ERROR "MAYBE SHUTDOWN"; exit 255; fi
+LOG_INFO "INSTANCE_NAME: ${result}"
+INSTANCE_NAME=$result
+TRACE_END
+
+TRACE_START "GET ORACLE_DATA_DIRECTORY_PATH BY INSTANCE_NAME"
+
+for maybe in $(find "${ORACLE_BASE}/oradata" -mindepth 1 -maxdepth 1 -type d); do
+  last=$(echo "$maybe" | awk -F/ '{print $NF}')
+  if [ "${last}" = "${INSTANCE_NAME}" ]; then
+    ORACLE_DATA=$maybe
+    break
+  fi
+done
+
+if [ -z $ORACLE_DATA ]; then
+  LOG_INFO "ORACLE_DATA is not exists"
+fi
+LOG_INFO "ORACLE_DATA: ${ORACLE_DATA}"
 TRACE_END
 
 TRACE_START "CHECK ORACLE_DATA, ORACLE_DBS"
@@ -107,7 +165,10 @@ if [ $? -ne 0 ]; then LOG_ERROR "$result"; exit 255; fi
 TRACE_END
 
 TRACE_START "EXECUTE QUERY FOR BACKUP CONTROL FILE GENERATION SCRIPT"
-query="alter database backup controlfile to trace as $BACKUP_CONTROLFILE_PATH_FOR_QUERY;"
+query="
+alter database backup controlfile
+to trace as $BACKUP_CONTROLFILE_PATH_FOR_QUERY;
+"
 result="$(
   sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh"\
   "$query" "$TRACE_CONTEXT" "$logging_file"
@@ -120,18 +181,24 @@ fi
 LOG_INFO "BACKUP_CONTROLFILE_PATH: $(ls $BACKUP_CONTROLFILE_PATH)"
 TRACE_END
 
+TRACE_START "CHECK DIRECTORIES BEFORE PHYSICAL BACKUP"
+LOG_INFO "ORACLE_DATA: $ORACLE_DATA"
+LOG_INFO "ORACLE_DBS: $ORACLE_DBS"
+LOG_INFO "BACKUP_TARGET_DIRECTORY: $BACKUP_TARGET_DIRECTORY"
+TRACE_END
+
 TRACE_START "SHUTDOWN IMMEDIATE"
 query="shutdown immediate;"
 result="$(
   sh "${MANAGER_PATH}/executeQueryWithLog/executeQueryWithLog.sh"\
   "$query" "$TRACE_CONTEXT" "$logging_file" "as sysdba"
 )"
-if [ $? -ne 0 ]; then LOG_ERROR "$result"; exit 255; fi
 LOG_INFO "$result"
 TRACE_END
 
-TRACE_START "PHYSICAL BACKUP"
-ECHO_RED_GLOW "TODO: FROM physical backup"
+TRACE_START "EXECUTE PHYSICAL BACKUP"
+cp -r $(echo "$ORACLE_DATA/*") $BACKUP_TARGET_DIRECTORY
+cp -r $(echo "$ORACLE_DBS/*") $BACKUP_TARGET_DIRECTORY
 TRACE_END
 
 TRACE_START "STARTUP OPEN"
@@ -152,4 +219,38 @@ result="$(
 )"
 if [ $? -ne 0 ]; then LOG_ERROR "$result"; exit 255; fi
 LOG_INFO "$result"
+TRACE_END
+
+TRACE_START "CHECK PHYSICAL BACKUP"
+LOG_INFO "$(echo "$(ls -al $BACKUP_TARGET_DIRECTORY)")"
+TRACE_END
+
+TRACE_START "COMPLETE"
+END_SECOND=$(date +%s)
+OPERATION_TIME_SECOND=$((END_SECOND - START_SECOND))
+
+ECHO_YELLOW_GLOW "BACKUP_TARGET_DIRECTORY: ${BACKUP_TARGET_DIRECTORY} (TOTAL: ${OPERATION_TIME_SECOND}s)"
+TRACE_END
+
+TRACE_START "RECORD DISK INFORMATION AFTER"
+echo "$(df | awk '{print $6" : "$5}')" > $temp_disk_info_after
+TRACE_END
+
+TRACE_START "DIFF DISK INFORMATION"
+diff $temp_disk_info_before $temp_disk_info_after > $temp_disk_info_diff
+TRACE_END
+
+TRACE_START "GET TOTAL SIZE BACKUP_DIRECTORY"
+BACKUP_DIRECTORY_SIZE=$(du -s $BACKUP_DIRECTORY | awk '{print $1}')
+BACKUP_DIRECTORY_SIZE_AS_GIGA=$(echo "scale=2; $BACKUP_DIRECTORY_SIZE / 1024 / 1024" | bc)
+TRACE_END
+
+TRACE_START "GET TOTAL SIZE BACKUP_TARGET_DIRECTORY"
+BACKUP_TARGET_DIRECTORY_SIZE=$(du -s $BACKUP_TARGET_DIRECTORY | awk '{print $1}')
+BACKUP_TARGET_DIRECTORY_SIZE_AS_GIGA=$(echo "scale=2; $BACKUP_TARGET_DIRECTORY_SIZE / 1024 / 1024" | bc)
+TRACE_END
+
+TRACE_START "REPORT BACKUP_DIRECTORY SIZE"
+LOG_INFO "${BACKUP_DIRECTORY}: ${BACKUP_DIRECTORY_SIZE_AS_GIGA}GB"
+LOG_INFO "${BACKUP_TARGET_DIRECTORY}: ${BACKUP_TARGET_DIRECTORY_SIZE_AS_GIGA}GB"
 TRACE_END
