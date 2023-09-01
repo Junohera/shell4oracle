@@ -1,5 +1,7 @@
 #!/bin/sh
 
+clear;
+
 prefix="$(echo $0 | awk -F"/" '{print $1}')"
 
 START_SECOND=$(date +%s)
@@ -221,6 +223,53 @@ if [ $? -ne 0 ]; then LOG_ERROR "$result"; exit 255; fi
 LOG_INFO "$result"
 TRACE_END
 
+TRACE_START "RECORD DISK INFORMATION AFTER"
+echo "$(df | awk '{print $6" : "$5}')" > $temp_disk_info_after
+TRACE_END
+
+TRACE_START "DIFF DISK INFORMATION"
+diff -y $temp_disk_info_before $temp_disk_info_after > $temp_disk_info_diff
+TRACE_END
+
+TRACE_START "REPORT BACKUP_DIRECTORY SIZE"
+BACKUP_DIRECTORY_SIZE=$(du -s $BACKUP_DIRECTORY | awk '{print $1}')
+BACKUP_DIRECTORY_SIZE_AS_GIGA=$(echo "scale=2; $BACKUP_DIRECTORY_SIZE / 1024 / 1024" | bc)
+echo $(
+  LOG_INFO "BACKUP_DIRECTORY: ${BACKUP_DIRECTORY}";
+  ECHO_GREEN "${BACKUP_DIRECTORY_SIZE_AS_GIGA}GB";
+)
+
+BACKUP_TARGET_DIRECTORY_SIZE=$(du -s $BACKUP_TARGET_DIRECTORY | awk '{print $1}')
+BACKUP_TARGET_DIRECTORY_SIZE_AS_GIGA=$(echo "scale=2; $BACKUP_TARGET_DIRECTORY_SIZE / 1024 / 1024" | bc)
+echo $(
+  LOG_INFO "BACKUP_TARGET_DIRECTORY: ${BACKUP_TARGET_DIRECTORY}";
+  ECHO_GREEN "${BACKUP_TARGET_DIRECTORY_SIZE_AS_GIGA}GB";
+)
+
+TRACE_END
+
+TRACE_START "REPORT DIFF DISK INFORMATION"
+i=1
+while IFS= read -r line; do
+  echo $line | grep '|' > /dev/null
+  if [ $? -gt 0 ]; then
+    continue
+  fi
+
+  directory=$(echo $line | awk -F"|" '{print $1}' | awk -F":" '{print $1}' | awk '{print $1}')
+  before=$(echo $line | awk -F"|" '{print $1}' | awk -F":" '{print $2}' | awk '{print $1}')
+  after=$(echo $line | awk -F"|" '{print $2}' | awk -F":" '{print $2}' | awk '{print $1}')
+  echo $(
+    LOG_INFO "DIFF DISK INFORMATION - $i: ";
+    ECHO_MAGENTA "${directory}";
+    ECHO_BLUE "${before}";
+    LOG_TRACE "->";
+    ECHO_RED "${after}";
+  )
+  i=$(expr $i + 1)
+done < $temp_disk_info_diff
+TRACE_END
+
 TRACE_START "CHECK PHYSICAL BACKUP"
 LOG_INFO "$(echo "$(ls -al $BACKUP_TARGET_DIRECTORY)")"
 TRACE_END
@@ -229,28 +278,5 @@ TRACE_START "COMPLETE"
 END_SECOND=$(date +%s)
 OPERATION_TIME_SECOND=$((END_SECOND - START_SECOND))
 
-ECHO_YELLOW_GLOW "BACKUP_TARGET_DIRECTORY: ${BACKUP_TARGET_DIRECTORY} (TOTAL: ${OPERATION_TIME_SECOND}s)"
-TRACE_END
-
-TRACE_START "RECORD DISK INFORMATION AFTER"
-echo "$(df | awk '{print $6" : "$5}')" > $temp_disk_info_after
-TRACE_END
-
-TRACE_START "DIFF DISK INFORMATION"
-diff $temp_disk_info_before $temp_disk_info_after > $temp_disk_info_diff
-TRACE_END
-
-TRACE_START "GET TOTAL SIZE BACKUP_DIRECTORY"
-BACKUP_DIRECTORY_SIZE=$(du -s $BACKUP_DIRECTORY | awk '{print $1}')
-BACKUP_DIRECTORY_SIZE_AS_GIGA=$(echo "scale=2; $BACKUP_DIRECTORY_SIZE / 1024 / 1024" | bc)
-TRACE_END
-
-TRACE_START "GET TOTAL SIZE BACKUP_TARGET_DIRECTORY"
-BACKUP_TARGET_DIRECTORY_SIZE=$(du -s $BACKUP_TARGET_DIRECTORY | awk '{print $1}')
-BACKUP_TARGET_DIRECTORY_SIZE_AS_GIGA=$(echo "scale=2; $BACKUP_TARGET_DIRECTORY_SIZE / 1024 / 1024" | bc)
-TRACE_END
-
-TRACE_START "REPORT BACKUP_DIRECTORY SIZE"
-LOG_INFO "${BACKUP_DIRECTORY}: ${BACKUP_DIRECTORY_SIZE_AS_GIGA}GB"
-LOG_INFO "${BACKUP_TARGET_DIRECTORY}: ${BACKUP_TARGET_DIRECTORY_SIZE_AS_GIGA}GB"
+LOG_INFO "BACKUP_TARGET_DIRECTORY: ${BACKUP_TARGET_DIRECTORY} (TOTAL: ${OPERATION_TIME_SECOND}s)"
 TRACE_END

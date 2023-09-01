@@ -90,8 +90,6 @@ check_shell_file() {
     LOG_ERROR "${shell_file} is not exists."
     exit
   fi
-
-  shell_file
 }
 # 5. execute shell file
 execute_shell_file() {
