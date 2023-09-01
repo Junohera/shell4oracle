@@ -279,11 +279,11 @@ if [ "$BACKUP_TYPE" = "COLD" ]; then
   TRACE_END
 
   TRACE_START "DESCRIBE FILES ORACLE_DATA"
-  ls -al $ORACLE_DATA
+  LOG_INFO "$(echo "$(ls -al $ORACLE_DATA)")"
   TRACE_END
 
   TRACE_START "DESCRIBE FILES ORACLE_DBS"
-  ls -al $ORACLE_DBS
+  LOG_INFO "$(echo "$(ls -al $ORACLE_DBS)")"
   TRACE_END
 fi
 
